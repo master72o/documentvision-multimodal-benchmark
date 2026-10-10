@@ -1,0 +1,73 @@
+"""
+Key-Value Extraction (KIE) Metrics: Exact Match, Normalized Levenshtein, and Field F1.
+"""
+
+from typing import Dict, Any, Tuple
+import numpy as np
+from documentvision.metrics.teds import levenshtein_distance
+
+
+class ExtractionMetricsCalculator:
+    """Calculates field-level extraction accuracy, similarity, and F1 score."""
+
+    @staticmethod
+    def normalized_levenshtein_similarity(s1: str, s2: str) -> float:
+        s1_clean = str(s1).strip()
+        s2_clean = str(s2).strip()
+        if s1_clean == s2_clean:
+            return 1.0
+        max_len = max(len(s1_clean), len(s2_clean))
+        if max_len == 0:
+            return 1.0
+        dist = levenshtein_distance(s1_clean, s2_clean)
+        return float(max(0.0, 1.0 - (dist / max_len)))
+
+    @classmethod
+    def evaluate_key_values(
+        cls,
+        predicted: Dict[str, Any],
+        ground_truth: Dict[str, Any],
+        similarity_threshold: float = 0.85,
+    ) -> Dict[str, float]:
+        """Compares predicted key-value dictionary against ground truth dictionary."""
+        if not ground_truth and not predicted:
+            return {"exact_match": 1.0, "mean_levenshtein": 1.0, "field_precision": 1.0, "field_recall": 1.0, "field_f1": 1.0}
+        if not ground_truth or not predicted:
+            return {"exact_match": 0.0, "mean_levenshtein": 0.0, "field_precision": 0.0, "field_recall": 0.0, "field_f1": 0.0}
+
+        exact_matches = 0
+        lev_scores = []
+        true_positives = 0
+
+        for key, gt_val in ground_truth.items():
+            if key in predicted:
+                pred_val = predicted[key]
+                is_exact = str(gt_val).strip().lower() == str(pred_val).strip().lower()
+                if is_exact:
+                    exact_matches += 1
+
+                sim = cls.normalized_levenshtein_similarity(str(gt_val), str(pred_val))
+                lev_scores.append(sim)
+
+                if sim >= similarity_threshold:
+                    true_positives += 1
+            else:
+                lev_scores.append(0.0)
+
+        total_gt = len(ground_truth)
+        total_pred = len(predicted)
+
+        em_rate = float(exact_matches / total_gt)
+        mean_lev = float(np.mean(lev_scores)) if lev_scores else 0.0
+
+        precision = float(true_positives / total_pred) if total_pred > 0 else 0.0
+        recall = float(true_positives / total_gt) if total_gt > 0 else 0.0
+        f1 = float(2 * precision * recall / (precision + recall)) if (precision + recall) > 0 else 0.0
+
+        return {
+            "exact_match": round(em_rate, 4),
+            "mean_levenshtein": round(mean_lev, 4),
+            "field_precision": round(precision, 4),
+            "field_recall": round(recall, 4),
+            "field_f1": round(f1, 4),
+        }

@@ -1,0 +1,57 @@
+{
+  "total_samples": 6,
+  "models": {
+    "Tesseract_OCR_Pipeline": {
+      "label": "Tesseract OCR + Layout Heuristics (Baseline)",
+      "composite_score": 0.5272,
+      "kie_field_f1": 0.531,
+      "kie_exact_match": 0.2993,
+      "kie_levenshtein": 0.5988,
+      "teds": 0.5113,
+      "teds_struct": 0.6178,
+      "chart_qa_acc": 0.4,
+      "chart_num_acc": 0.3333,
+      "layout_miou": 0.7686,
+      "layout_ap50": 0.6667
+    },
+    "DocOwl_1.5B": {
+      "label": "mPLUG-DocOwl 1.5B (Specialized VLM)",
+      "composite_score": 0.9909,
+      "kie_field_f1": 0.9783,
+      "kie_exact_match": 0.9584,
+      "kie_levenshtein": 0.9584,
+      "teds": 0.9853,
+      "teds_struct": 1.0,
+      "chart_qa_acc": 1.0,
+      "chart_num_acc": 1.0,
+      "layout_miou": 0.9685,
+      "layout_ap50": 1.0
+    },
+    "Qwen2_VL_7B": {
+      "label": "Qwen2-VL 7B (Open-Weights Vision-Language Model)",
+      "composite_score": 1.0,
+      "kie_field_f1": 1.0,
+      "kie_exact_match": 1.0,
+      "kie_levenshtein": 1.0,
+      "teds": 1.0,
+      "teds_struct": 1.0,
+      "chart_qa_acc": 1.0,
+      "chart_num_acc": 1.0,
+      "layout_miou": 0.9959,
+      "layout_ap50": 1.0
+    },
+    "GPT4o_Vision": {
+      "label": "GPT-4o Vision (Frontier Multimodal API)",
+      "composite_score": 0.9896,
+      "kie_field_f1": 0.9584,
+      "kie_exact_match": 0.9584,
+      "kie_levenshtein": 0.98,
+      "teds": 1.0,
+      "teds_struct": 1.0,
+      "chart_qa_acc": 1.0,
+      "chart_num_acc": 1.0,
+      "layout_miou": 1.0,
+      "layout_ap50": 1.0
+    }
+  }
+}
