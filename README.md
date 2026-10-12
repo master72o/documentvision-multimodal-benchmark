@@ -3,6 +3,7 @@
 > Multimodal Document Understanding Benchmark: Comparing Traditional OCR Pipelines against Vision-Language Models on Dense Tables, Key-Value Extraction, Charts, and Layout Grounding.
 
 [![Streamlit Studio](https://img.shields.io/badge/Streamlit-Studio_Live-FF4B4B.svg?logo=streamlit)](https://github.com/master72o/documentvision-multimodal-benchmark)
+[![CI](https://github.com/master72o/documentvision-multimodal-benchmark/actions/workflows/ci.yml/badge.svg)](https://github.com/master72o/documentvision-multimodal-benchmark/actions/workflows/ci.yml)
 [![TEDS Metric: IBM PubTabNet](https://img.shields.io/badge/Metric-TEDS_PubTabNet-052F5F.svg)](https://arxiv.org/abs/1911.10683)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
