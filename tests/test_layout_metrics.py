@@ -32,3 +32,18 @@ def test_evaluate_layout_boxes():
     res = LayoutMetricsCalculator.evaluate_layout_boxes(pred, gt)
     assert res["mean_iou"] > 0.70
     assert res["ap_50"] == 1.0
+
+
+def test_compute_map_50_95_and_reading_order():
+    gt = [
+        {"ymin": 10, "xmin": 10, "ymax": 60, "xmax": 200, "label": "title"},
+        {"ymin": 80, "xmin": 10, "ymax": 180, "xmax": 200, "label": "table"},
+        {"ymin": 200, "xmin": 10, "ymax": 240, "xmax": 200, "label": "footer"},
+    ]
+    pred_exact = list(gt)
+    assert LayoutMetricsCalculator.compute_map_50_95(pred_exact, gt) == 1.0
+    assert LayoutMetricsCalculator.reading_order_concordance(pred_exact, gt) == 1.0
+
+    # Reversed order
+    pred_reversed = list(reversed(gt))
+    assert LayoutMetricsCalculator.reading_order_concordance(pred_reversed, gt) == 0.0

@@ -3,6 +3,8 @@ Key-Value Extraction (KIE) Metrics: Exact Match, Normalized Levenshtein, and Fie
 """
 
 from typing import Dict, Any, Tuple
+from typing import List, Sequence
+import re
 import numpy as np
 from documentvision.metrics.teds import levenshtein_distance
 
@@ -71,3 +73,49 @@ class ExtractionMetricsCalculator:
             "field_recall": round(recall, 4),
             "field_f1": round(f1, 4),
         }
+
+    @classmethod
+    def compute_anls(
+        cls,
+        predicted_answer: str,
+        ground_truth_answers: Sequence[str],
+        threshold: float = 0.5,
+    ) -> float:
+        """
+        ICDAR DocVQA Average Normalized Levenshtein Similarity (ANLS).
+        Computes max normalized similarity across human reference answers and clips to 0.0 if < threshold.
+        """
+        if not ground_truth_answers:
+            return 1.0 if not str(predicted_answer).strip() else 0.0
+
+        pred_norm = " ".join(str(predicted_answer).strip().lower().split())
+        best_sim = 0.0
+        for gt in ground_truth_answers:
+            gt_norm = " ".join(str(gt).strip().lower().split())
+            sim = cls.normalized_levenshtein_similarity(pred_norm, gt_norm)
+            if sim > best_sim:
+                best_sim = sim
+
+        return round(float(best_sim), 4) if best_sim >= threshold else 0.0
+
+    @staticmethod
+    def numeric_value_match(
+        predicted_val: str,
+        ground_truth_val: str,
+        rel_tol: float = 0.01,
+    ) -> bool:
+        """
+        Normalizes currency/formatting symbols ($, commas, %) and checks numeric equivalence within rel_tol.
+        """
+        def _parse_num(val: str):
+            cleaned = re.sub(r"[$€£,\s%]", "", str(val).strip())
+            match = re.search(r"[-+]?\d*\.?\d+", cleaned)
+            return float(match.group(0)) if match else None
+
+        p_num = _parse_num(predicted_val)
+        g_num = _parse_num(ground_truth_val)
+        if p_num is None or g_num is None:
+            return False
+        if g_num == 0.0:
+            return abs(p_num) <= rel_tol
+        return abs(p_num - g_num) / abs(g_num) <= rel_tol
